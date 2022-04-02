@@ -1,148 +1,125 @@
-<h1>Formulaire présence mariage Clémence & Nicolas le 26/08/2023</h1>
-<p>Veuillez sélectionner votre nom / prénom dans la liste </p>
+<button mat-raised-button (click)="isEditable = !isEditable">
+  {{!isEditable ? 'Enable edit mode' : 'Disable edit mode'}}
+</button>
 
-<form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="fill">
-    <mat-label>Sélection nom</mat-label>
-    <mat-select id="first-name" type="text" formControlName="firstName" required>
-      <mat-option *ngFor="let invite of invites" [value]="invite.id">
-        {{invite.nom}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <div *ngIf="profileForm.value.firstName != ''">
-    <div>
-      <h1>Disponibilité: </h1>
-      <p>Serez-vous disponible le 26/08/2023 pour célébrer notre mariage ?</p>
+<mat-horizontal-stepper linear #stepper>
+  <!-- #docregion editable -->
+  <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
+    <!-- #enddocregion editable -->
+    <form [formGroup]="firstFormGroup" (ngSubmit)="onSubmit(firstFormGroup.value)">
+      <!-- #docregion step-label -->
+      <ng-template matStepLabel>Sélection du nom</ng-template>
+      <!-- #enddocregion step-label -->
       <mat-form-field appearance="fill">
-        <mat-label>Disponibilité</mat-label>
-        <select id="disponibilite" formControlName="disponibilite" matNativeControl required>
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
-        </select>
+        <mat-label>Sélection nom</mat-label>
+        <mat-select id="nom" type="text" formControlName="nom" required>
+          <mat-option *ngFor="let invite of invites" [value]="invite.id">
+            {{invite.nom}}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
-      <!--Si non présent au repas-->
-      <p *ngIf="profileForm.value.disponibilite == '0'"> C'est dommage, on pensera à vous pendant la soirée :=) </p>
-      <p *ngIf="profileForm.value.disponibilite == '1'"> Cool, on passe à l'étape suivante pour l'apéro, manger ou danser ?! :) </p>
-    </div>
+      <div>
+        <button mat-flat-button color="primary" matStepperNext [disabled]="!firstFormGroup.valid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup" [editable]="isEditable">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Indiquer votre présence</ng-template>
 
-    <div *ngIf="profileForm.value.disponibilite == '1'">
-      <h1>Apéro: </h1>
-      <p>Direction le chateau de Munas pour célébrer notre mariage</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Apéro</mat-label>
-        <select id="apero" formControlName="apero" matNativeControl required>
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
-        </select>
-      </mat-form-field>
-    </div>
+        <!-- Disponibilité -->
+        <div>
+          <h1>Disponibilité: </h1>
+          <p>Serez-vous disponible le 26/08/2023 pour célébrer notre mariage ?</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Disponibilité</mat-label>
+            <select id="disponibilite" formControlName="disponibilite" matNativeControl required>
+              <option value="1">Oui</option>
+              <option value="0">Non</option>
+            </select>
+          </mat-form-field>
+          <!--Si non présent au repas-->
+          <p *ngIf="secondFormGroup.value.disponibilite == '0'"> C'est dommage, on pensera à vous pendant la soirée :=) </p>
+          <p *ngIf="secondFormGroup.value.disponibilite == '1'"> Cool, on passe à l'étape suivante pour l'apéro, manger ou danser ?! :) </p>
+        </div>
 
-    <!--Ajouter si vous êtes invités au repas-->
-    <div *ngIf="profileForm.value.disponibilite == '1'">
-      <h1>Repas: </h1>
-      <mat-form-field appearance="fill">
-        <mat-label>Repas</mat-label>
-        <select id="repas" formControlName="repas" matNativeControl required>
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
-        </select>
-      </mat-form-field>
-      <mat-form-field *ngIf="profileForm.value.repas == '1'" appearance="fill">
-        <mat-label>Végétarien</mat-label>
-        <select id="vegetarien" formControlName="vegetarien" matNativeControl required>
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
-        </select>
-      </mat-form-field>
-      <!--Si non présent au repas-->
-      <p *ngIf="profileForm.value.repas == 0 && profileForm.value.repas != ''"> Bonjour </p>
-      <p *ngIf="profileForm.value.repas == 1"> Bonjour </p>
-    </div>
+        <div *ngIf="secondFormGroup.value.disponibilite == '1'">
+          <h1>Apéro: </h1>
+          <p>Direction le chateau de Munas pour célébrer notre mariage</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Apéro</mat-label>
+            <select id="apero" formControlName="apero" matNativeControl required>
+              <option value="1">Oui</option>
+              <option value="0">Non</option>
+            </select>
+          </mat-form-field>
+        </div>
 
-    <div *ngIf="profileForm.value.disponibilite == '1'">
-      <h1>Nuit dansante: </h1>
-      <mat-form-field appearance="fill">
-        <mat-label>Nuit</mat-label>
-        <select id="soiree" formControlName="soiree" matNativeControl required>
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
-        </select>
-      </mat-form-field>
-    </div>
+      <!--Ajouter si vous êtes invités au repas-->
+      <div *ngIf="secondFormGroup.value.disponibilite == '1'">
+        <h1>Repas: </h1>
+        <mat-form-field appearance="fill">
+          <mat-label>Repas</mat-label>
+          <select id="repas" formControlName="repas" matNativeControl required>
+            <option value="1">Oui</option>
+            <option value="0">Non</option>
+          </select>
+        </mat-form-field>
+        <mat-form-field *ngIf="secondFormGroup.value.repas == '1'" appearance="fill">
+          <mat-label>Végétarien</mat-label>
+          <select id="vegetarien" formControlName="vegetarien" matNativeControl required>
+            <option value="1">Oui</option>
+            <option value="0">Non</option>
+          </select>
+        </mat-form-field>
+        <!--Si non présent au repas-->
+        <p *ngIf="secondFormGroup.value.repas == 0 && secondFormGroup.value.repas != ''"> Bonjour </p>
+        <p *ngIf="secondFormGroup.value.repas == 1"> Bonjour </p>
+      </div>
 
-    <div *ngIf="profileForm.value.soiree == '1'">
-      <h1>Dodo: </h1>
-      <mat-form-field appearance="fill">
-        <mat-label>Dodo</mat-label>
-        <select id="dodo" formControlName="dodo" matNativeControl required>
-          <option value="0">Chambre limité à 30 personnes</option>
-          <option value="1">Matelas gonflable à l'intérieur</option>
-          <option value="2">Tente ou Van aménagé</option>
-          <option value="3">Chez moi</option>
-          <option value="4">Autres</option>
-        </select>
-      </mat-form-field>
-    </div>
+      <div *ngIf="secondFormGroup.value.disponibilite == '1'">
+        <h1>Nuit dansante: </h1>
+        <mat-form-field appearance="fill">
+          <mat-label>Nuit</mat-label>
+          <select id="soiree" formControlName="soiree" matNativeControl required>
+            <option value="1">Oui</option>
+            <option value="0">Non</option>
+          </select>
+        </mat-form-field>
+      </div>
 
-    <div *ngIf="profileForm.value.disponibilite == '1'">
-      <h1>Dimanche: </h1>
-      <mat-form-field appearance="fill">
-        <mat-label>Dimanche</mat-label>
-        <select id="dimanche" formControlName="dimanche" matNativeControl required>
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
-        </select>
-      </mat-form-field>
-    </div>
-  </div>
+      <div *ngIf="secondFormGroup.value.soiree == '1'">
+        <h1>Dodo: </h1>
+        <mat-form-field appearance="fill">
+          <mat-label>Dodo</mat-label>
+          <select id="dodo" formControlName="dodo" matNativeControl required>
+            <option value="0">Chambre limité à 30 personnes</option>
+            <option value="1">Matelas gonflable à l'intérieur</option>
+            <option value="2">Tente ou Van aménagé</option>
+            <option value="3">Chez moi</option>
+            <option value="4">Autres</option>
+          </select>
+        </mat-form-field>
+      </div>
 
-  <p>Merci d'avoir compléter le formulaire. Pensez à bien valider avec le bouton ci-dessous</p>
-  <button mat-flat-button color="primary" type="submit" [disabled]="!profileForm.valid">Valider</button>
-</form>
-
-<br>
-<p>Form Value: {{ profileForm.value | json }}</p>
-<p>Form Status: {{ profileForm.status }}</p>
-  <!--
-  <div formGroupName="address">
-    <h2>Address</h2>
-
-    <label for="street">Street: </label>
-    <input id="street" type="text" formControlName="street">
-
-    <label for="city">City: </label>
-    <input id="city" type="text" formControlName="city">
-
-    <label for="state">State: </label>
-    <input id="state" type="text" formControlName="state">
-
-    <label for="zip">Zip Code: </label>
-    <input id="zip"type="text" formControlName="zip">
-  </div>
-
-  <div formArrayName="aliases">
-    <h2>Aliases</h2>
-    <button type="button" (click)="addAlias()">+ Add another alias</button>
-
-    <div *ngFor="let alias of aliases.controls; let i=index">
-      <label for="alias-{{ i }}">Alias:</label>
-      <input id="alias-{{ i }}" type="text" [formControlName]="i">
-    </div>
-  </div>
-
-
-  <p>Complete the form to enable button.</p>
-  <button type="submit" [disabled]="!profileForm.valid">Submit</button>
-</form>
-
-<hr>
-
-<p>Form Value: {{ profileForm.value | json }}</p>
-
-<p>Form Status: {{ profileForm.status }}</p>
-
-<button type="button" (click)="updateProfile()">Update Profile</button>
-
--->
+      <div *ngIf="secondFormGroup.value.disponibilite == '1'">
+        <h1>Dimanche: </h1>
+        <mat-form-field appearance="fill">
+          <mat-label>Dimanche</mat-label>
+          <select id="dimanche" formControlName="dimanche" matNativeControl required>
+            <option value="1">Oui</option>
+            <option value="0">Non</option>
+          </select>
+        </mat-form-field>
+      </div>
+      <div>
+        <button mat-flat-button color="warn" matStepperPrevious>Back</button>
+        <button mat-flat-button color="primary" matStepperNext [disabled]="!secondFormGroup.valid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Formulaire validé !</ng-template>
+    <p>Le formulaire est validé. Merci d'avoir donné votre réponse. RDV le 26/08/2023</p>
+  </mat-step>
+</mat-horizontal-stepper>

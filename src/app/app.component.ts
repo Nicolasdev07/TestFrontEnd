@@ -1,14 +1,18 @@
-import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { Validators } from '@angular/forms';
-import { FormArray } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 interface Invite {
   id: number;
   nom: string;
+  dispo: boolean;
+  repas: boolean;
+  vegetarien: boolean;
+  soiree: boolean;
+  dodo: boolean;
+  dimanche: boolean;
 }
 
-interface RepasDanse {
+interface Invitation {
   id: number;
   repas: boolean;
   danse: boolean;
@@ -21,63 +25,39 @@ interface RepasDanse {
 })
 export class AppComponent {
   invites: Invite[] = [
-    {id: 1, nom: 'Nicolas'},
-    {id: 2, nom: 'David'},
-    {id: 3, nom: 'Pauline'},
+    {id: 1, nom: 'Nicolas ARNAUDON', dispo: true, repas: true, vegetarien: true, soiree:true, dodo:true, dimanche:true},
+    {id: 2, nom: 'David ARNAUDON', dispo: false, repas: false, vegetarien: false, soiree:false, dodo:false, dimanche:false},
+    {id: 3, nom: 'Pauline ARNAUDON', dispo: true, repas: true, vegetarien: true, soiree:true, dodo:true, dimanche:true}
   ];
 
-  donneesInvite: RepasDanse[];
+  invitation: Invitation;
 
-  profileForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: [''],
-      disponibilite: [''],
-      apero: [''],
-      repas: [''],
-      vegetarien: [''],
-      soiree: [''],
-      dodo: [''],
-      dimanche: [''],
-      address: this.fb.group({
-        street: [''],
-        city: [''],
-        state: [''],
-        zip: ['']
-      }),
-      aliases: this.fb.array([
-        this.fb.control('')
-      ])
-    });
+  constructor(private fb: FormBuilder) { }
+    firstFormGroup: FormGroup;
+    secondFormGroup: FormGroup;
+    isEditable = true;
 
-    selectionDonneesInvite(){
-      this.donneesInvite = [
-          {id: 1, repas: true, danse: true},
-          {id: 2, repas: false, danse: true},
-          {id: 3, repas: true, danse: false},
-        ];
-    }
+    ngOnInit() {
+      this.firstFormGroup = this.fb.group({
+        nom: ['', Validators.required]
+      });
 
-    get aliases() {
-      return this.profileForm.get('aliases') as FormArray;
-    }
-
-    constructor(private fb: FormBuilder) { }
-
-    updateProfile() {
-      this.profileForm.patchValue({
-        firstName: 'Nancy',
-        address: {
-          street: '123 Drew Street'
-        }
+      this.secondFormGroup = this.fb.group({
+        disponibilite: [''],
+        apero: [''],
+        repas: [''],
+        vegetarien: [''],
+        soiree: [''],
+        dodo: [''],
+        dimanche: ['']
       });
     }
 
-    addAlias() {
-      this.aliases.push(this.fb.control(''));
+    onSubmit(firstFormGroup) {
+      console.warn(firstFormGroup.nom);
+      console.warn(this.secondFormGroup.value);
+      this.invitation = {id: 1, repas: true, danse: true}
+      console.warn(this.invitation);
     }
 
-    onSubmit() {
-      // TODO: Use EventEmitter with form value
-      console.warn(this.profileForm.value);
-    }
 }
