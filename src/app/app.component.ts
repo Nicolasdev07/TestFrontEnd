@@ -24,6 +24,7 @@ export class AppComponent {
     secondFormGroup: FormGroup;
     isEditable = true;
     choixInvitation: number;
+    inviteUpdate:Invite;
 
     ngOnInit() {
       this.getInvites();
@@ -48,11 +49,26 @@ export class AppComponent {
     }
 
     onSubmit(firstFormGroup) {
-      console.warn(firstFormGroup.nom);
+
 
       this.inviteService.getInviteById(firstFormGroup.nom).subscribe(data => {
            this.choixInvitation = data.choixInvitation;
+           this.inviteUpdate = data;
+           console.log(data)
       }, error => console.log(error));
+
+
     }
 
+
+    onSubmitTwo() {
+       this.inviteUpdate.danse = this.secondFormGroup.value.soiree == 0 ? false : true
+       this.inviteUpdate.repas = this.secondFormGroup.value.repas == 0 ? false : true
+       this.inviteUpdate.vegetarien = this.secondFormGroup.value.vegetarien == 0 ? false : true
+       this.inviteUpdate.dimanche = this.secondFormGroup.value.dimanche == 0 ? false : true
+       this.inviteUpdate.disponible = this.secondFormGroup.value.disponibilite == 0 ? false : true
+       this.inviteUpdate.dodo = this.secondFormGroup.value.dodo
+
+       this.inviteService.updateInvite(this.inviteUpdate.id, this.inviteUpdate).subscribe( data =>{}, error => console.log(error));
+    }
 }

@@ -19,4 +19,8 @@ export class InviteService {
   getInviteById(id: number): Observable<Invite>{
     return this.httpClient.get<Invite>(`${this.baseURL}/${id}`);
   }
+
+  updateInvite(id: number, invite: Invite): Observable<Object>{
+    return this.httpClient.put(`${this.baseURL}/${id}`, invite);
+  }
 }
