@@ -1,7 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
 import { Invite } from './invite';
-import { InviteService } from './invite.service'
+import { InviteService } from './invite.service';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators'
 
 @Component({
   selector: 'app-root',
@@ -11,6 +13,11 @@ import { InviteService } from './invite.service'
 export class AppComponent {
 
   invites: Invite[];
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
+  isEditable = true;
+  choixInvitation: number;
+  inviteUpdate:Invite;
   /*
   invites: Invite[] = [
     {id: 1, nom: 'Nicolas ARNAUDON', dispo: true, repas: true, vegetarien: true, soiree:true, dodo:true, dimanche:true},
@@ -19,19 +26,16 @@ export class AppComponent {
   ];
   */
 
-  constructor(private inviteService: InviteService,  private fb: FormBuilder) { }
-    firstFormGroup: FormGroup;
-    secondFormGroup: FormGroup;
-    isEditable = true;
-    choixInvitation: number;
-    inviteUpdate:Invite;
+  filteredOptions: Observable<Invite[]>;
+  nom: FormControl;
+    constructor(private inviteService: InviteService,  private fb: FormBuilder) {
 
-    ngOnInit() {
-      this.getInvites();
+      this.nom = this.fb.control('');
 
       this.firstFormGroup = this.fb.group({
-        nom: ['', Validators.required]
+        nom: this.nom
       });
+
 
       this.secondFormGroup = this.fb.group({
         disponibilite: [''],
@@ -44,20 +48,36 @@ export class AppComponent {
       });
     }
 
+    ngOnInit() {
+      this.getInvites();
+    }
+
+    displayFn(invite: Invite): string {
+      return invite.nom ? invite.nom : '';
+    }
+
+    private _filter(nom: string): Invite[] {
+      const filterValue = nom.toLowerCase();
+
+      return this.invites.filter(option => option.nom.toLowerCase().includes(filterValue));
+    }
+
     private getInvites(){
-      this.inviteService.getInvitesList().subscribe(data => {this.invites = data;});
+      this.inviteService.getInvitesList().subscribe(data => {
+        this.invites = data;
+        this.filteredOptions = this.nom.valueChanges.pipe(
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value.name)),
+          map(nom => (nom ? this._filter(nom) : this.invites.slice())),
+        );
+      });
     }
 
     onSubmit(firstFormGroup) {
-
-
-      this.inviteService.getInviteById(firstFormGroup.nom).subscribe(data => {
+      this.inviteService.getInviteById(firstFormGroup.nom.id).subscribe(data => {
            this.choixInvitation = data.choixInvitation;
            this.inviteUpdate = data;
-           console.log(data)
       }, error => console.log(error));
-
-
     }
 
 

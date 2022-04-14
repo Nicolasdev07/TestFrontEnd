@@ -10,13 +10,14 @@
       <!-- #docregion step-label -->
       <ng-template matStepLabel>Sélection du nom</ng-template>
       <!-- #enddocregion step-label -->
-      <mat-form-field appearance="fill">
+      <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Sélection nom</mat-label>
-        <mat-select id="nom" type="text" formControlName="nom" required>
-          <mat-option *ngFor="let invite of invites" [value]="invite.id">
-            {{invite.nom}}
+        <input type="text" matInput [formControl]="nom" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option.nom}}
           </mat-option>
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
       <div>
         <button mat-flat-button color="primary" matStepperNext [disabled]="!firstFormGroup.valid">Next</button>
