@@ -17,6 +17,7 @@ export class AppComponent {
   secondFormGroup: FormGroup;
   isEditable = true;
   choixInvitation: number;
+  famille: number;
   inviteUpdate:Invite;
   /*
   invites: Invite[] = [
@@ -44,7 +45,8 @@ export class AppComponent {
         vegetarien: [''],
         soiree: [''],
         dodo: [''],
-        dimanche: ['']
+        dimanche: [''],
+        famille: ['']
       });
     }
 
@@ -75,6 +77,7 @@ export class AppComponent {
 
     onSubmit(firstFormGroup) {
       this.inviteService.getInviteById(firstFormGroup.nom.id).subscribe(data => {
+           this.famille = data.idFamille;
            this.choixInvitation = data.choixInvitation;
            this.inviteUpdate = data;
       }, error => console.log(error));
@@ -82,6 +85,7 @@ export class AppComponent {
 
 
     onSubmitTwo() {
+      console.log(this.secondFormGroup.value)
        this.inviteUpdate.danse = this.secondFormGroup.value.soiree == 0 ? false : true
        this.inviteUpdate.repas = this.secondFormGroup.value.repas == 0 ? false : true
        this.inviteUpdate.vegetarien = this.secondFormGroup.value.vegetarien == 0 ? false : true

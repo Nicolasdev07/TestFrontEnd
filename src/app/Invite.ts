@@ -9,4 +9,5 @@ export class Invite {
    dodo: boolean;
    dimanche: boolean;
    choixInvitation: number;
+   idFamille: number;
 }

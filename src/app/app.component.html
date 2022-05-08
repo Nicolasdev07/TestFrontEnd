@@ -27,7 +27,14 @@
   <mat-step [stepControl]="secondFormGroup" [editable]="isEditable">
     <form [formGroup]="secondFormGroup" (ngSubmit)="onSubmitTwo()">
       <ng-template matStepLabel>Indiquer votre présence</ng-template>
-
+        <div *ngIf="famille !== 0 ">
+          <h1>Tout d'abord, pour éviter de remplir le formulaire pour toute la famille :  </h1>
+          <mat-radio-group class="example-radio-group" id="famille" formControlName="famille" matNativeControl required>
+            <mat-radio-button class="example-radio-button" value="1">J'applique mon choix à mon conjoint (et / ou) à toute la famille</mat-radio-button>
+            <mat-radio-button class="example-radio-button" value="2">J'applique mon choix à mon conjoint mais je viens sans les gosses (pour ceux qui en ont)</mat-radio-button>
+            <mat-radio-button class="example-radio-button" value="3">Chacun se démerde</mat-radio-button>
+          </mat-radio-group>
+        </div>
         <!-- Disponibilité -->
         <div>
           <h1>Disponibilité: </h1>
