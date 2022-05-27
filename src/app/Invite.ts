@@ -3,6 +3,7 @@ export class Invite {
    nom: string;
    adulte: boolean;
    disponible: boolean;
+   apero: boolean;
    repas: boolean;
    vegetarien: boolean;
    danse: boolean;
@@ -10,4 +11,5 @@ export class Invite {
    dimanche: boolean;
    choixInvitation: number;
    idFamille: number;
+   commentaire: string;
 }

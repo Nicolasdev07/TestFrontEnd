@@ -12,7 +12,7 @@ import { map, startWith } from 'rxjs/operators'
 })
 export class AppComponent {
 
-  invites: Invite[];
+  invites : Invite[];
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   isEditable = true;
@@ -46,7 +46,8 @@ export class AppComponent {
         soiree: [''],
         dodo: [''],
         dimanche: [''],
-        famille: ['']
+        famille: [''],
+        commentaire: ['']
       });
     }
 
@@ -84,15 +85,45 @@ export class AppComponent {
     }
 
 
-    onSubmitTwo() {
-      console.log(this.secondFormGroup.value)
-       this.inviteUpdate.danse = this.secondFormGroup.value.soiree == 0 ? false : true
-       this.inviteUpdate.repas = this.secondFormGroup.value.repas == 0 ? false : true
-       this.inviteUpdate.vegetarien = this.secondFormGroup.value.vegetarien == 0 ? false : true
-       this.inviteUpdate.dimanche = this.secondFormGroup.value.dimanche == 0 ? false : true
-       this.inviteUpdate.disponible = this.secondFormGroup.value.disponibilite == 0 ? false : true
-       this.inviteUpdate.dodo = this.secondFormGroup.value.dodo
+    /****
+    ATTENTION :
+      Oublie du champ apéro dans la base
+    ***/
 
-       this.inviteService.updateInvite(this.inviteUpdate.id, this.inviteUpdate).subscribe( data =>{}, error => console.log(error));
+    onSubmitTwo() {
+          if (this.secondFormGroup.value.famille == 1 || this.secondFormGroup.value.famille == 2 ) {
+            this.inviteService.getInvitesListByIdFamille(this.inviteUpdate.idFamille).subscribe(data => {
+                data.forEach((value) => {
+                    console.log(value);
+                    if(value.adulte == false && this.secondFormGroup.value.famille == 2 ) {
+                      value.disponible = false
+                    }else{
+                      value.danse = this.secondFormGroup.value.soiree == 0 ? false : true
+                      value.repas = this.secondFormGroup.value.repas == 0 ? false : true
+                      value.vegetarien = this.secondFormGroup.value.vegetarien == 0 ? false : true
+                      value.dimanche = this.secondFormGroup.value.dimanche == 0 ? false : true
+                      value.disponible = this.secondFormGroup.value.disponibilite == 0 ? false : true
+                      value.apero = this.secondFormGroup.value.apero == 0 ? false : true
+                      value.dodo = this.secondFormGroup.value.dodo
+                      value.commentaire = this.secondFormGroup.value.commentaire
+                    }
+                    this.inviteService.updateInvite(value.id, value).subscribe( data =>{}, error => console.log(error));
+                });
+            }, error => console.log(error));
+          }
+
+       if (this.secondFormGroup.value.famille == 3)
+       {
+          this.inviteUpdate.danse = this.secondFormGroup.value.soiree == 0 ? false : true
+          this.inviteUpdate.repas = this.secondFormGroup.value.repas == 0 ? false : true
+          this.inviteUpdate.vegetarien = this.secondFormGroup.value.vegetarien == 0 ? false : true
+          this.inviteUpdate.dimanche = this.secondFormGroup.value.dimanche == 0 ? false : true
+          this.inviteUpdate.disponible = this.secondFormGroup.value.disponibilite == 0 ? false : true
+          this.inviteUpdate.apero = this.secondFormGroup.value.apero == 0 ? false : true
+          this.inviteUpdate.commentaire = this.secondFormGroup.value.commentaire
+          this.inviteUpdate.dodo = this.secondFormGroup.value.dodo
+          this.inviteService.updateInvite(this.inviteUpdate.id, this.inviteUpdate).subscribe( data =>{}, error => console.log(error));
+       }
+
     }
 }

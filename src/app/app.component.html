@@ -120,6 +120,11 @@
           </select>
         </mat-form-field>
       </div>
+      <h1>Un commentaire (allergies, contraintes ...)</h1>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Commentaires</mat-label>
+        <input id="commentaire" formControlName="commentaire" matNativeControl placeholder="Ex: Je suis allergique au kiwi" value="">
+      </mat-form-field>
       <div>
         <button mat-flat-button color="warn" matStepperPrevious>Back</button>
         <button mat-flat-button color="primary" matStepperNext [disabled]="!secondFormGroup.valid">Next</button>
