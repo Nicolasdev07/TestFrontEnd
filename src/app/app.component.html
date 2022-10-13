@@ -1,7 +1,8 @@
+<!--
 <button mat-raised-button (click)="isEditable = !isEditable">
   {{!isEditable ? 'Enable edit mode' : 'Disable edit mode'}}
 </button>
-
+-->
 <mat-horizontal-stepper linear #stepper>
   <!-- #docregion editable -->
   <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
@@ -20,22 +21,30 @@
         </mat-autocomplete>
       </mat-form-field>
       <div>
-        <button mat-flat-button color="primary" matStepperNext [disabled]="!firstFormGroup.valid">Next</button>
+        <button mat-flat-button color="primary" matStepperNext [disabled]="!firstFormGroup.valid">Suivant</button>
       </div>
     </form>
   </mat-step>
   <mat-step [stepControl]="secondFormGroup" [editable]="isEditable">
     <form [formGroup]="secondFormGroup" (ngSubmit)="onSubmitTwo()">
       <ng-template matStepLabel>Indiquer votre présence</ng-template>
-        <div *ngIf="famille !== 0 ">
+       <!-- <div *ngIf="famille !== 0 "> -->
+        <div>
           <h1>Tout d'abord, pour éviter de remplir le formulaire pour toute la famille :  </h1>
-          <mat-radio-group class="example-radio-group" id="famille" formControlName="famille" matNativeControl required>
-            <mat-radio-button class="example-radio-button" value="1">J'applique mon choix à mon conjoint (et / ou) à toute la famille</mat-radio-button>
-            <mat-radio-button class="example-radio-button" value="2">J'applique mon choix à mon conjoint mais je viens sans les gosses (pour ceux qui en ont)</mat-radio-button>
-            <mat-radio-button class="example-radio-button" value="3">Chacun se démerde</mat-radio-button>
+          <mat-radio-group class="example-radio-group" id="famille" formControlName="famille" matNativeControl [required]="famille !== 0">
+            <mat-radio-button (change)="handleChange($event)" class="example-radio-button" value="1" [disabled]="famille == 0"><span class="wrap-mat-radio-label">J'applique mon choix à mon conjoint (et / ou) à toute la famille</span></mat-radio-button>
+            <mat-radio-button (change)="handleChange($event)" class="example-radio-button" value="2" [disabled]="famille == 0"><span class="wrap-mat-radio-label">J'applique mon choix à mon conjoint mais je viens sans les gosses (pour ceux qui en ont)</span></mat-radio-button>
+            <mat-radio-button (change)="handleChange($event)" class="example-radio-button" value="3" [checked]="famille == 0" ><span class="wrap-mat-radio-label">Chacun se démerde</span></mat-radio-button>
           </mat-radio-group>
         </div>
-        <!-- Disponibilité -->
+
+        <div *ngIf="radioFamilleDiv">
+          La liste des personnes concernées par ce formulaire est :
+          <div *ngFor="let item of invitesFamille | slice:half">
+            <p><b>{{ item.nom }}</b></p>
+          </div>
+        </div>
+      <!-- Disponibilité -->
         <div>
           <h1>Disponibilité: </h1>
           <p>Serez-vous disponible le 26/08/2023 pour célébrer notre mariage ?</p>
@@ -75,18 +84,17 @@
         </mat-form-field>
         <mat-form-field *ngIf="secondFormGroup.value.repas == '1'" appearance="fill">
           <mat-label>Végétarien</mat-label>
+          <p>Souhaitez vous un menu végétarien ?</p>
           <select id="vegetarien" formControlName="vegetarien" matNativeControl required>
             <option value="1">Oui</option>
             <option value="0">Non</option>
           </select>
         </mat-form-field>
-        <!--Si non présent au repas-->
-        <p *ngIf="secondFormGroup.value.repas == 0 && secondFormGroup.value.repas != ''"> Bonjour </p>
-        <p *ngIf="secondFormGroup.value.repas == 1"> Bonjour </p>
       </div>
 
       <div *ngIf="secondFormGroup.value.disponibilite == '1' && (choixInvitation==1 || choixInvitation==2)">
         <h1>Nuit dansante: </h1>
+        <p>Pour prolonger le plaisir jusqu'au bout de la nuit :)</p>
         <mat-form-field appearance="fill">
           <mat-label>Nuit</mat-label>
           <select id="soiree" formControlName="soiree" matNativeControl required>
@@ -98,6 +106,10 @@
 
       <div *ngIf="secondFormGroup.value.disponibilite == '1' && (choixInvitation==1 || choixInvitation==2)">
         <h1>Dodo: </h1>
+        <p>
+           Bien entendu, vous pouvez dormir sur place (et c'est même plus rassurant pour nous).
+           Des chambres et matelas seront à disposition mais vous pouvez amener aussi amener votre duvet, matelas ou tente.
+        </p>
         <mat-form-field appearance="fill">
           <mat-label>Dodo</mat-label>
           <select id="dodo" formControlName="dodo" matNativeControl required>
@@ -112,6 +124,9 @@
 
       <div *ngIf="secondFormGroup.value.disponibilite == '1' && (choixInvitation==1 || choixInvitation==2)">
         <h1>Dimanche: </h1>
+        <p>
+          Pour bien finir le week end, on passera un dimanche plus posé à base de piscine pétanque et autres loisirs :)
+        </p>
         <mat-form-field appearance="fill">
           <mat-label>Dimanche</mat-label>
           <select id="dimanche" formControlName="dimanche" matNativeControl required>
@@ -126,8 +141,8 @@
         <input id="commentaire" formControlName="commentaire" matNativeControl placeholder="Ex: Je suis allergique au kiwi" value="">
       </mat-form-field>
       <div>
-        <button mat-flat-button color="warn" matStepperPrevious>Back</button>
-        <button mat-flat-button color="primary" matStepperNext [disabled]="!secondFormGroup.valid">Next</button>
+        <button mat-flat-button color="warn" matStepperPrevious>Précédent</button>
+        <button mat-flat-button color="primary" matStepperNext [disabled]="!secondFormGroup.valid">Suivant</button>
       </div>
     </form>
   </mat-step>

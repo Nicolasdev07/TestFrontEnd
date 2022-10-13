@@ -12,26 +12,32 @@ import { map, startWith } from 'rxjs/operators'
 })
 export class AppComponent {
 
-  invites : Invite[];
+  invites; invitesFamille : Invite[];
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  isEditable = true;
+  isEditable = false;
+  radioFamilleDiv = false;
   choixInvitation: number;
   famille: number;
   inviteUpdate:Invite;
-  /*
-  invites: Invite[] = [
-    {id: 1, nom: 'Nicolas ARNAUDON', dispo: true, repas: true, vegetarien: true, soiree:true, dodo:true, dimanche:true},
-    {id: 2, nom: 'David ARNAUDON', dispo: false, repas: false, vegetarien: false, soiree:false, dodo:false, dimanche:false},
-    {id: 3, nom: 'Pauline ARNAUDON', dispo: true, repas: true, vegetarien: true, soiree:true, dodo:true, dimanche:true}
-  ];
-  */
 
   filteredOptions: Observable<Invite[]>;
   nom: FormControl;
-    constructor(private inviteService: InviteService,  private fb: FormBuilder) {
 
-      this.nom = this.fb.control('');
+    constructor(private inviteService: InviteService,  private fb: FormBuilder) {
+      console.log('Entrée dans le controller');
+      this.inviteService.getInvitesList().subscribe(data => {
+        console.log('Entrée dans le service getInvitesList');
+        this.invites = data;
+        this.filteredOptions = this.nom.valueChanges.pipe(
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value.name)),
+          map(nom => (nom ? this._filter(nom) : this.invites.slice())),
+        );
+        console.log('Sortie service');
+      });
+
+      this.nom = this.fb.control('', Validators.required);
 
       this.firstFormGroup = this.fb.group({
         nom: this.nom
@@ -49,10 +55,7 @@ export class AppComponent {
         famille: [''],
         commentaire: ['']
       });
-    }
-
-    ngOnInit() {
-      this.getInvites();
+      console.log('Sortie controller');
     }
 
     displayFn(invite: Invite): string {
@@ -65,18 +68,11 @@ export class AppComponent {
       return this.invites.filter(option => option.nom.toLowerCase().includes(filterValue));
     }
 
-    private getInvites(){
-      this.inviteService.getInvitesList().subscribe(data => {
-        this.invites = data;
-        this.filteredOptions = this.nom.valueChanges.pipe(
-          startWith(''),
-          map(value => (typeof value === 'string' ? value : value.name)),
-          map(nom => (nom ? this._filter(nom) : this.invites.slice())),
-        );
-      });
-    }
-
     onSubmit(firstFormGroup) {
+      if(firstFormGroup.nom.id == undefined){
+        alert('Merci de sélectionner un utilisateur dans la liste déroulante')
+        window.location.reload()
+      }
       this.inviteService.getInviteById(firstFormGroup.nom.id).subscribe(data => {
            this.famille = data.idFamille;
            this.choixInvitation = data.choixInvitation;
@@ -84,17 +80,14 @@ export class AppComponent {
       }, error => console.log(error));
     }
 
-
-    /****
-    ATTENTION :
-      Oublie du champ apéro dans la base
-    ***/
-
     onSubmitTwo() {
+          if (this.secondFormGroup.value.famille != 1 && this.secondFormGroup.value.famille != 2 ) {
+            this.secondFormGroup.value.famille = 3;
+          }
+
           if (this.secondFormGroup.value.famille == 1 || this.secondFormGroup.value.famille == 2 ) {
             this.inviteService.getInvitesListByIdFamille(this.inviteUpdate.idFamille).subscribe(data => {
                 data.forEach((value) => {
-                    console.log(value);
                     if(value.adulte == false && this.secondFormGroup.value.famille == 2 ) {
                       value.disponible = false
                     }else{
@@ -122,8 +115,25 @@ export class AppComponent {
           this.inviteUpdate.apero = this.secondFormGroup.value.apero == 0 ? false : true
           this.inviteUpdate.commentaire = this.secondFormGroup.value.commentaire
           this.inviteUpdate.dodo = this.secondFormGroup.value.dodo
+          console.log('ok');
           this.inviteService.updateInvite(this.inviteUpdate.id, this.inviteUpdate).subscribe( data =>{}, error => console.log(error));
        }
 
+    }
+
+    handleChange(evt) {
+        this.inviteService.getInvitesListByIdFamille(this.inviteUpdate.idFamille).subscribe(data => {
+           this.invitesFamille = data;
+           if (evt.source._checked && evt.source._value =='1') {
+               this.radioFamilleDiv = true;
+           } else if (evt.source._checked && evt.source._value =='2') {
+               this.radioFamilleDiv = true;
+               this.invitesFamille = this.invitesFamille.filter((obj) => {
+                  return obj.adulte === true;
+               });
+           } else {
+               this.radioFamilleDiv = false;
+           }
+        }, error => console.log(error));
     }
 }
