@@ -9,8 +9,8 @@ import { Invite } from './invite';
 export class InviteService {
 
   // Local
-  private baseURL = "http://localhost:5000/api/v1/invites";
-  // private baseURL = "https://mariage-test.herokuapp.com/api/v1/invites";
+  //private baseURL = "http://localhost:5000/api/v1/invites";
+  private baseURL = "https://mariage-test.herokuapp.com/api/v1/invites";
 
   constructor(private httpClient: HttpClient) { }
 
